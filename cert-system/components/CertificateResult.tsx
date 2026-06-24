@@ -1,4 +1,4 @@
-import type { Certificate } from "@/types/certificate";
+import type { Certificate } from "@/types";
 
 export default function CertificateResult({ certificate }: { certificate: Certificate | null }) {
   if (!certificate) {

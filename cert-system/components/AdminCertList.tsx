@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Certificate } from "@/types/certificate";
+import type { Certificate } from "@/types";
 import QRCodeCert from "@/components/QRCodeCert";
 import CertificateForm from "@/components/CertificateForm";
 
@@ -22,7 +22,7 @@ export default function AdminCertList({ initialCertificates }: { initialCertific
     const res = await fetch(`/api/certificates/${cert.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...cert, status: newStatus }),
+      body: JSON.stringify({ status: newStatus }),
     });
     if (res.ok) {
       const { data } = await res.json();

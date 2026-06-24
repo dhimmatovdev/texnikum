@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Certificate } from "@/types/certificate";
+import type { Certificate } from "@/types";
 
 type Props = {
   onCreated: (certificate: Certificate) => void;

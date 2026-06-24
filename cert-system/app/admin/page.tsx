@@ -1,16 +1,11 @@
-import { getServerComponentSupabase } from "@/lib/supabase-server";
+import { getAllCertificates } from "@/lib/certificates";
 import AdminCertList from "@/components/AdminCertList";
 import LogoutButton from "@/components/LogoutButton";
-import type { Certificate } from "@/types/certificate";
 
 export const revalidate = 0;
 
 export default async function AdminPage() {
-  const supabase = getServerComponentSupabase();
-  const { data } = await supabase
-    .from("certificates")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const certificates = await getAllCertificates();
 
   return (
     <main className="min-h-screen bg-zinc-50 px-4 py-8">
@@ -23,7 +18,7 @@ export default async function AdminPage() {
           <LogoutButton />
         </div>
 
-        <AdminCertList initialCertificates={(data as Certificate[]) ?? []} />
+        <AdminCertList initialCertificates={certificates} />
       </div>
     </main>
   );

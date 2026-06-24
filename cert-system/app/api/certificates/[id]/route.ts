@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRouteHandlerSupabase } from "@/lib/supabase-server";
-import { getAdminSupabase } from "@/lib/supabase-admin";
+import { cookies } from "next/headers";
+import { createServerClient, createAdminClient } from "@/lib/supabase";
+import { updateCertificateStatus } from "@/lib/certificates";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const supabase = getRouteHandlerSupabase();
+  const supabase = createServerClient(cookies());
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const admin = getAdminSupabase();
+  const admin = createAdminClient();
   const { data, error } = await admin
     .from("certificates")
     .select("*")
@@ -25,63 +26,37 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const supabase = getRouteHandlerSupabase();
+  const supabase = createServerClient(cookies());
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await req.json();
-  const {
-    cert_no,
-    familiya,
-    ism,
-    sharif,
-    yonalish_uz,
-    yonalish_eng,
-    soat,
-    start_date,
-    end_date,
-    status,
-  } = body;
+  const { status } = await req.json();
 
-  const admin = getAdminSupabase();
-  const { data, error } = await admin
-    .from("certificates")
-    .update({
-      cert_no,
-      familiya,
-      ism,
-      sharif,
-      yonalish_uz,
-      yonalish_eng,
-      soat,
-      start_date,
-      end_date,
-      status,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", params.id)
-    .select()
-    .single();
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (status !== "active" && status !== "inactive") {
+    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 
-  return NextResponse.json({ data });
+  try {
+    const data = await updateCertificateStatus(params.id, status);
+    return NextResponse.json({ data });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update certificate";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const supabase = getRouteHandlerSupabase();
+  const supabase = createServerClient(cookies());
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const admin = getAdminSupabase();
+  const admin = createAdminClient();
   const { error } = await admin.from("certificates").delete().eq("id", params.id);
 
   if (error) {

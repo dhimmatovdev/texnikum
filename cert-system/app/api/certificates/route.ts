@@ -1,30 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRouteHandlerSupabase } from "@/lib/supabase-server";
-import { getAdminSupabase } from "@/lib/supabase-admin";
+import { cookies } from "next/headers";
+import { createServerClient } from "@/lib/supabase";
+import { getAllCertificates, createCertificate, searchCertificates } from "@/lib/certificates";
 
-export async function GET() {
-  const supabase = getRouteHandlerSupabase();
+export async function GET(req: NextRequest) {
+  const supabase = createServerClient(cookies());
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const admin = getAdminSupabase();
-  const { data, error } = await admin
-    .from("certificates")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  const query = req.nextUrl.searchParams.get("q");
+  const data = query ? await searchCertificates(query) : await getAllCertificates();
 
   return NextResponse.json({ data });
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = getRouteHandlerSupabase();
+  const supabase = createServerClient(cookies());
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
@@ -49,10 +43,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const admin = getAdminSupabase();
-  const { data, error } = await admin
-    .from("certificates")
-    .insert({
+  try {
+    const data = await createCertificate({
       ...(cert_no ? { cert_no } : {}),
       familiya,
       ism,
@@ -63,13 +55,10 @@ export async function POST(req: NextRequest) {
       start_date: start_date ?? null,
       end_date: end_date ?? null,
       status: status ?? "active",
-    })
-    .select()
-    .single();
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    });
+    return NextResponse.json({ data }, { status: 201 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to create certificate";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  return NextResponse.json({ data }, { status: 201 });
 }
