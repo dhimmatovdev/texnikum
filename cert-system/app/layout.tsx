@@ -13,8 +13,8 @@ const geistMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nukus Tibbiyot va IT Texnikumi — Sertifikat tekshirish",
-  description: "Nukus Tibbiyot va IT Texnikumi sertifikatlarini onlayn tekshirish tizimi",
+  title: "SAMARQAND TIBBIYOT TEXNIKUMI — Sertifikat tekshirish",
+  description: "SAMARQAND TIBBIYOT TEXNIKUMI sertifikatlarini onlayn tekshirish tizimi",
 };
 
 export default function RootLayout({

@@ -158,7 +158,7 @@ export default function CertificateForm({ onCreated }: Props) {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-md bg-[#0F6E56] px-4 py-2 text-sm font-medium text-white hover:bg-[#0c5a46] disabled:opacity-50"
+            className="rounded-md bg-[#16215C] px-4 py-2 text-sm font-medium text-white hover:bg-[#101a47] disabled:opacity-50"
           >
             {loading ? "Saqlanmoqda..." : "Sertifikat qo'shish"}
           </button>

@@ -1,6 +1,6 @@
-# Nukus Tibbiyot va IT Texnikumi — Sertifikat tekshirish tizimi
+# Samarqand Tibbiyot Texnikumi — Sertifikat tekshirish tizimi
 
-Certificate verification system for Nukus Tibbiyot va IT Texnikumi.
+Certificate verification system for Samarqand Tibbiyot Texnikumi.
 
 ## Stack
 

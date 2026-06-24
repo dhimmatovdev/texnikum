@@ -6,7 +6,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-zinc-50">
       <nav className="fixed inset-x-0 top-0 z-10 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0F6E56]">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#16215C]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </svg>
           </div>
           <span className="text-sm font-bold text-gray-900">
-            Nukus Tibbiyot va IT Texnikumi
+            SAMARQAND TIBBIYOT TEXNIKUMI
           </span>
         </div>
 
@@ -34,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="hidden text-xs text-gray-500 sm:inline">admin@texnikum.uz</span>
+          <span className="hidden text-xs text-gray-500 sm:inline">texnikum_t</span>
           <LogoutButton />
         </div>
       </nav>
