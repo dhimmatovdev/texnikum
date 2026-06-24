@@ -12,7 +12,7 @@ export default function NavLink({ href, children }: { href: string; children: Re
       href={href}
       className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
         isActive
-          ? "bg-[#0F6E56]/10 text-[#0F6E56]"
+          ? "bg-[#16215C]/10 text-[#16215C]"
           : "text-gray-600 hover:text-gray-900"
       }`}
     >

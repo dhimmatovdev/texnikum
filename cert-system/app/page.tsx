@@ -6,7 +6,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-sm">
         <h1 className="text-center text-2xl font-bold text-gray-900">
-          Nukus Tibbiyot va IT Texnikumi
+          SAMARQAND TIBBIYOT TEXNIKUMI
         </h1>
         <p className="mt-2 text-center text-sm text-gray-500">
           Sertifikat haqiqiyligini onlayn tekshirish tizimi

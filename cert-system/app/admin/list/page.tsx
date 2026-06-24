@@ -52,7 +52,7 @@ export default async function AdminListPage({
           />
           <button
             type="submit"
-            className="rounded-md bg-[#0F6E56] px-4 py-2 text-sm font-medium text-white hover:bg-[#0c5a46]"
+            className="rounded-md bg-[#16215C] px-4 py-2 text-sm font-medium text-white hover:bg-[#101a47]"
           >
             Qidirish
           </button>
@@ -65,7 +65,7 @@ export default async function AdminListPage({
               href={buildHref({ q, status: f.value === "all" ? undefined : f.value })}
               className={`rounded-md px-3 py-1.5 text-sm font-medium ${
                 status === f.value
-                  ? "bg-[#0F6E56] text-white"
+                  ? "bg-[#16215C] text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
