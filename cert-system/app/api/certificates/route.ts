@@ -3,31 +3,37 @@ import { cookies } from "next/headers";
 import { createServerClient } from "@/lib/supabase";
 import { getAllCertificates, createCertificate, searchCertificates } from "@/lib/certificates";
 
-export async function GET(req: NextRequest) {
+async function requireUser() {
   const supabase = createServerClient(cookies());
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+}
 
-  if (!session) {
+export async function GET(req: NextRequest) {
+  const user = await requireUser();
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const query = req.nextUrl.searchParams.get("q");
-  const data = query ? await searchCertificates(query) : await getAllCertificates();
 
-  return NextResponse.json({ data });
+  try {
+    const data = query ? await searchCertificates(query) : await getAllCertificates();
+    return NextResponse.json({ data });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to fetch certificates";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = createServerClient(cookies());
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!session) {
+  const user = await requireUser();
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = await req.json();
   const {
-    cert_no,
     familiya,
     ism,
     sharif,
@@ -44,8 +50,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // cert_no is intentionally never accepted here — the database trigger
+    // (generate_cert_no) assigns it on insert.
     const data = await createCertificate({
-      ...(cert_no ? { cert_no } : {}),
       familiya,
       ism,
       sharif: sharif ?? null,

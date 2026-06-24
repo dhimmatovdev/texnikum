@@ -24,16 +24,11 @@ export async function middleware(req: NextRequest) {
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  // Refresh the session cookie if needed.
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const isLoginPage = req.nextUrl.pathname === "/admin/login";
-
-  if (!session && !isLoginPage) {
-    return NextResponse.redirect(new URL("/admin/login", req.url));
-  }
-
-  if (session && isLoginPage) {
-    return NextResponse.redirect(new URL("/admin", req.url));
+  if (!user) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return res;

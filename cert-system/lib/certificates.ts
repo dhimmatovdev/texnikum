@@ -24,6 +24,18 @@ export async function getCertificateByNo(certNo: string): Promise<Certificate | 
   return data;
 }
 
+export async function getCertificateById(id: string): Promise<Certificate | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("certificates")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createCertificate(
   data: Partial<Omit<Certificate, "id" | "created_at">>
 ): Promise<Certificate> {
@@ -52,6 +64,22 @@ export async function updateCertificateStatus(
 
   if (error) throw error;
   return data;
+}
+
+export async function updateCertificate(
+  id: string,
+  data: Partial<Omit<Certificate, "id" | "cert_no" | "created_at">>
+): Promise<Certificate> {
+  const supabase = createAdminClient();
+  const { data: updated, error } = await supabase
+    .from("certificates")
+    .update(data)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return updated;
 }
 
 export async function searchCertificates(query: string): Promise<Certificate[]> {
