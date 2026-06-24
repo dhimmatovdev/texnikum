@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createServerClient, createAdminClient } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase";
+import { isAdminSession } from "@/lib/auth";
 import { getCertificateById, updateCertificate, updateCertificateStatus } from "@/lib/certificates";
 
-async function requireUser() {
-  const supabase = createServerClient(cookies());
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
-}
-
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const user = await requireUser();
-  if (!user) {
+  if (!isAdminSession()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -28,8 +21,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const user = await requireUser();
-  if (!user) {
+  if (!isAdminSession()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -49,8 +41,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const user = await requireUser();
-  if (!user) {
+  if (!isAdminSession()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -91,8 +82,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const user = await requireUser();
-  if (!user) {
+  if (!isAdminSession()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

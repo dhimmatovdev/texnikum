@@ -1,17 +1,7 @@
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { createServerClient } from "@/lib/supabase";
 import NavLink from "@/components/NavLink";
 import LogoutButton from "@/components/LogoutButton";
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createServerClient(cookies());
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-zinc-50">
       <nav className="fixed inset-x-0 top-0 z-10 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4">
@@ -44,7 +34,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="hidden text-xs text-gray-500 sm:inline">{user.email}</span>
+          <span className="hidden text-xs text-gray-500 sm:inline">admin@texnikum.uz</span>
           <LogoutButton />
         </div>
       </nav>

@@ -1,17 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createServerClient } from "@/lib/supabase";
+import { isAdminSession } from "@/lib/auth";
 import { getAllCertificates, createCertificate, searchCertificates } from "@/lib/certificates";
 
-async function requireUser() {
-  const supabase = createServerClient(cookies());
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
-}
-
 export async function GET(req: NextRequest) {
-  const user = await requireUser();
-  if (!user) {
+  if (!isAdminSession()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -27,8 +19,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await requireUser();
-  if (!user) {
+  if (!isAdminSession()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

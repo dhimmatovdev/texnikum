@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase";
+
+const ADMIN_EMAIL = "admin@texnikum.uz";
+const ADMIN_PASSWORD = "texnikum2024";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -11,23 +13,19 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    setLoading(false);
-
-    if (error) {
-      setError("Email yoki parol noto'g'ri");
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      document.cookie = "admin_session=true; path=/; max-age=86400";
+      router.push("/admin");
       return;
     }
 
-    router.push("/admin");
-    router.refresh();
+    setLoading(false);
+    setError("Login yoki parol noto'g'ri");
   }
 
   return (
