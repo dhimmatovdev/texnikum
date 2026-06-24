@@ -1,4 +1,4 @@
-import type { Certificate } from "@/types/certificate";
+import type { Certificate } from "@/types";
 
 export default function CertificateResult({ certificate }: { certificate: Certificate | null }) {
   if (!certificate) {
@@ -12,21 +12,24 @@ export default function CertificateResult({ certificate }: { certificate: Certif
     );
   }
 
-  const isValid = certificate.status === "valid";
+  const isActive = certificate.status === "active";
+  const fullName = [certificate.familiya, certificate.ism, certificate.sharif]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div
       className={`rounded-lg border p-6 ${
-        isValid ? "border-green-200 bg-green-50" : "border-amber-200 bg-amber-50"
+        isActive ? "border-green-200 bg-green-50" : "border-amber-200 bg-amber-50"
       }`}
     >
       <div className="flex items-center justify-between">
-        <p className={`text-lg font-semibold ${isValid ? "text-green-700" : "text-amber-700"}`}>
-          {isValid ? "Sertifikat haqiqiy" : "Sertifikat bekor qilingan"}
+        <p className={`text-lg font-semibold ${isActive ? "text-green-700" : "text-amber-700"}`}>
+          {isActive ? "Sertifikat haqiqiy" : "Sertifikat bekor qilingan"}
         </p>
         <span
           className={`rounded-full px-3 py-1 text-xs font-medium ${
-            isValid ? "bg-green-600 text-white" : "bg-amber-600 text-white"
+            isActive ? "bg-green-600 text-white" : "bg-amber-600 text-white"
           }`}
         >
           {certificate.cert_no}
@@ -36,26 +39,36 @@ export default function CertificateResult({ certificate }: { certificate: Certif
       <dl className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <dt className="text-xs uppercase tracking-wide text-gray-500">F.I.Sh.</dt>
-          <dd className="text-base font-medium text-gray-900">{certificate.full_name}</dd>
+          <dd className="text-base font-medium text-gray-900">{fullName}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-gray-500">Mutaxassislik</dt>
-          <dd className="text-base font-medium text-gray-900">{certificate.specialty}</dd>
+          <dt className="text-xs uppercase tracking-wide text-gray-500">Yo&apos;nalish</dt>
+          <dd className="text-base font-medium text-gray-900">{certificate.yonalish_uz}</dd>
         </div>
-        <div>
-          <dt className="text-xs uppercase tracking-wide text-gray-500">Bitirgan yili</dt>
-          <dd className="text-base font-medium text-gray-900">{certificate.graduation_year}</dd>
-        </div>
-        {certificate.gpa != null && (
+        {certificate.yonalish_eng && (
           <div>
-            <dt className="text-xs uppercase tracking-wide text-gray-500">GPA</dt>
-            <dd className="text-base font-medium text-gray-900">{certificate.gpa}</dd>
+            <dt className="text-xs uppercase tracking-wide text-gray-500">Direction</dt>
+            <dd className="text-base font-medium text-gray-900">{certificate.yonalish_eng}</dd>
           </div>
         )}
-        <div>
-          <dt className="text-xs uppercase tracking-wide text-gray-500">Berilgan sana</dt>
-          <dd className="text-base font-medium text-gray-900">{certificate.issue_date}</dd>
-        </div>
+        {certificate.soat != null && (
+          <div>
+            <dt className="text-xs uppercase tracking-wide text-gray-500">Soat</dt>
+            <dd className="text-base font-medium text-gray-900">{certificate.soat}</dd>
+          </div>
+        )}
+        {certificate.start_date && (
+          <div>
+            <dt className="text-xs uppercase tracking-wide text-gray-500">Boshlanish sanasi</dt>
+            <dd className="text-base font-medium text-gray-900">{certificate.start_date}</dd>
+          </div>
+        )}
+        {certificate.end_date && (
+          <div>
+            <dt className="text-xs uppercase tracking-wide text-gray-500">Tugash sanasi</dt>
+            <dd className="text-base font-medium text-gray-900">{certificate.end_date}</dd>
+          </div>
+        )}
       </dl>
     </div>
   );

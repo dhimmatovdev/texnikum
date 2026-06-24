@@ -1,17 +1,11 @@
-import { supabase } from "@/lib/supabase";
+import { getCertificateByNo, logVerification } from "@/lib/certificates";
 import CertificateResult from "@/components/CertificateResult";
-import type { Certificate } from "@/types/certificate";
 
 export const revalidate = 0;
 
 export default async function VerifyPage({ params }: { params: { certNo: string } }) {
-  const { data } = await supabase
-    .from("certificates")
-    .select("*")
-    .eq("cert_no", params.certNo)
-    .maybeSingle();
-
-  const certificate = (data as Certificate | null) ?? null;
+  const certificate = await getCertificateByNo(params.certNo);
+  await logVerification(params.certNo, certificate !== null);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4 py-12">
