@@ -9,12 +9,15 @@ type Props = {
 
 const emptyForm = {
   cert_no: "",
-  full_name: "",
-  specialty: "",
-  graduation_year: new Date().getFullYear(),
-  gpa: "",
-  issue_date: "",
-  status: "valid" as const,
+  familiya: "",
+  ism: "",
+  sharif: "",
+  yonalish_uz: "",
+  yonalish_eng: "",
+  soat: "",
+  start_date: "",
+  end_date: "",
+  status: "active" as const,
 };
 
 export default function CertificateForm({ onCreated }: Props) {
@@ -36,8 +39,12 @@ export default function CertificateForm({ onCreated }: Props) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
-        graduation_year: Number(form.graduation_year),
-        gpa: form.gpa ? Number(form.gpa) : null,
+        cert_no: form.cert_no || undefined,
+        sharif: form.sharif || null,
+        yonalish_eng: form.yonalish_eng || null,
+        soat: form.soat ? Number(form.soat) : null,
+        start_date: form.start_date || null,
+        end_date: form.end_date || null,
       }),
     });
 
@@ -56,59 +63,83 @@ export default function CertificateForm({ onCreated }: Props) {
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <div>
-        <label className="block text-xs font-medium text-gray-700">Sertifikat raqami</label>
+        <label className="block text-xs font-medium text-gray-700">
+          Sertifikat raqami (ixtiyoriy)
+        </label>
         <input
-          required
           value={form.cert_no}
           onChange={(e) => update("cert_no", e.target.value)}
+          placeholder="Bo'sh qoldirilsa avtomatik beriladi"
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-700">F.I.Sh.</label>
+        <label className="block text-xs font-medium text-gray-700">Familiya</label>
         <input
           required
-          value={form.full_name}
-          onChange={(e) => update("full_name", e.target.value)}
+          value={form.familiya}
+          onChange={(e) => update("familiya", e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-700">Mutaxassislik</label>
+        <label className="block text-xs font-medium text-gray-700">Ism</label>
         <input
           required
-          value={form.specialty}
-          onChange={(e) => update("specialty", e.target.value)}
+          value={form.ism}
+          onChange={(e) => update("ism", e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-700">Bitirgan yili</label>
+        <label className="block text-xs font-medium text-gray-700">Sharif</label>
+        <input
+          value={form.sharif}
+          onChange={(e) => update("sharif", e.target.value)}
+          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-700">Yo&apos;nalish (UZ)</label>
         <input
           required
+          value={form.yonalish_uz}
+          onChange={(e) => update("yonalish_uz", e.target.value)}
+          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-700">Direction (EN)</label>
+        <input
+          value={form.yonalish_eng}
+          onChange={(e) => update("yonalish_eng", e.target.value)}
+          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-700">Soat</label>
+        <input
           type="number"
-          value={form.graduation_year}
-          onChange={(e) => update("graduation_year", Number(e.target.value) as never)}
+          value={form.soat}
+          onChange={(e) => update("soat", e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-700">GPA</label>
+        <label className="block text-xs font-medium text-gray-700">Boshlanish sanasi</label>
         <input
-          type="number"
-          step="0.01"
-          value={form.gpa}
-          onChange={(e) => update("gpa", e.target.value as never)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-        />
-      </div>
-      <div>
-        <label className="block text-xs font-medium text-gray-700">Berilgan sana</label>
-        <input
-          required
           type="date"
-          value={form.issue_date}
-          onChange={(e) => update("issue_date", e.target.value)}
+          value={form.start_date}
+          onChange={(e) => update("start_date", e.target.value)}
+          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-700">Tugash sanasi</label>
+        <input
+          type="date"
+          value={form.end_date}
+          onChange={(e) => update("end_date", e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>
@@ -119,8 +150,8 @@ export default function CertificateForm({ onCreated }: Props) {
           onChange={(e) => update("status", e.target.value as never)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         >
-          <option value="valid">Valid</option>
-          <option value="revoked">Revoked</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
         </select>
       </div>
 

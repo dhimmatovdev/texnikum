@@ -18,7 +18,7 @@ export default function AdminCertList({ initialCertificates }: { initialCertific
   }
 
   async function handleToggleStatus(cert: Certificate) {
-    const newStatus = cert.status === "valid" ? "revoked" : "valid";
+    const newStatus = cert.status === "active" ? "inactive" : "active";
     const res = await fetch(`/api/certificates/${cert.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -54,8 +54,8 @@ export default function AdminCertList({ initialCertificates }: { initialCertific
                 <th className="py-2 pr-4">QR</th>
                 <th className="py-2 pr-4">Raqam</th>
                 <th className="py-2 pr-4">F.I.Sh.</th>
-                <th className="py-2 pr-4">Mutaxassislik</th>
-                <th className="py-2 pr-4">Yil</th>
+                <th className="py-2 pr-4">Yo&apos;nalish</th>
+                <th className="py-2 pr-4">Soat</th>
                 <th className="py-2 pr-4">Holati</th>
                 <th className="py-2 pr-4"></th>
               </tr>
@@ -67,14 +67,16 @@ export default function AdminCertList({ initialCertificates }: { initialCertific
                     <QRCodeCert certNo={cert.cert_no} />
                   </td>
                   <td className="py-3 pr-4 font-medium text-gray-900">{cert.cert_no}</td>
-                  <td className="py-3 pr-4">{cert.full_name}</td>
-                  <td className="py-3 pr-4">{cert.specialty}</td>
-                  <td className="py-3 pr-4">{cert.graduation_year}</td>
+                  <td className="py-3 pr-4">
+                    {[cert.familiya, cert.ism, cert.sharif].filter(Boolean).join(" ")}
+                  </td>
+                  <td className="py-3 pr-4">{cert.yonalish_uz}</td>
+                  <td className="py-3 pr-4">{cert.soat ?? "—"}</td>
                   <td className="py-3 pr-4">
                     <button
                       onClick={() => handleToggleStatus(cert)}
                       className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                        cert.status === "valid"
+                        cert.status === "active"
                           ? "bg-green-100 text-green-700"
                           : "bg-amber-100 text-amber-700"
                       }`}

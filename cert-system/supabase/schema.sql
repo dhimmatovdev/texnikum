@@ -1,38 +1,60 @@
 -- Run this in the Supabase SQL editor
 
-create table if not exists certificates (
-  id uuid primary key default gen_random_uuid(),
-  cert_no text not null unique,
-  full_name text not null,
-  specialty text not null,
-  graduation_year int not null,
-  gpa numeric(3, 2),
-  issue_date date not null,
-  status text not null default 'valid' check (status in ('valid', 'revoked')),
-  created_at timestamptz not null default now()
+-- Students / Certificates table
+CREATE TABLE certificates (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  cert_no TEXT UNIQUE NOT NULL,
+  familiya TEXT NOT NULL,
+  ism TEXT NOT NULL,
+  sharif TEXT,
+  yonalish_uz TEXT NOT NULL,
+  yonalish_eng TEXT,
+  soat INTEGER,
+  start_date DATE,
+  end_date DATE,
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
 );
 
-create index if not exists certificates_cert_no_idx on certificates (cert_no);
+-- Verification logs table
+CREATE TABLE verification_logs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  cert_no TEXT NOT NULL,
+  verified_at TIMESTAMPTZ DEFAULT now(),
+  ip_address TEXT,
+  found BOOLEAN NOT NULL
+);
 
-alter table certificates enable row level security;
+-- Auto-increment cert_no function
+CREATE SEQUENCE cert_no_seq START 1800001;
 
--- Anyone can read a certificate by its number (public verification page)
-create policy "Public can read certificates"
-  on certificates for select
-  using (true);
+CREATE OR REPLACE FUNCTION generate_cert_no()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.cert_no IS NULL OR NEW.cert_no = '' THEN
+    NEW.cert_no := nextval('cert_no_seq')::TEXT;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- Only authenticated admins can insert/update/delete
-create policy "Authenticated users can insert certificates"
-  on certificates for insert
-  to authenticated
-  with check (true);
+CREATE TRIGGER set_cert_no
+BEFORE INSERT ON certificates
+FOR EACH ROW EXECUTE FUNCTION generate_cert_no();
 
-create policy "Authenticated users can update certificates"
-  on certificates for update
-  to authenticated
-  using (true);
+-- RLS policies
+ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE verification_logs ENABLE ROW LEVEL SECURITY;
 
-create policy "Authenticated users can delete certificates"
-  on certificates for delete
-  to authenticated
-  using (true);
+-- Public can only READ active certificates (for verification page)
+CREATE POLICY "Public read active certs" ON certificates
+  FOR SELECT USING (status = 'active');
+
+-- Verification logs: public can insert
+CREATE POLICY "Public insert logs" ON verification_logs
+  FOR ALL USING (true);
+
+-- Admin full access (authenticated users)
+CREATE POLICY "Admin full access" ON certificates
+  FOR ALL USING (auth.role() = 'authenticated');

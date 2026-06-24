@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRouteHandlerSupabase } from "@/lib/supabase-server";
+import { getAdminSupabase } from "@/lib/supabase-admin";
 
 export async function GET() {
   const supabase = getRouteHandlerSupabase();
-  const { data, error } = await supabase
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const admin = getAdminSupabase();
+  const { data, error } = await admin
     .from("certificates")
     .select("*")
     .order("created_at", { ascending: false });
@@ -24,22 +32,37 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { cert_no, full_name, specialty, graduation_year, gpa, issue_date, status } = body;
+  const {
+    cert_no,
+    familiya,
+    ism,
+    sharif,
+    yonalish_uz,
+    yonalish_eng,
+    soat,
+    start_date,
+    end_date,
+    status,
+  } = body;
 
-  if (!cert_no || !full_name || !specialty || !graduation_year || !issue_date) {
+  if (!familiya || !ism || !yonalish_uz) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const { data, error } = await supabase
+  const admin = getAdminSupabase();
+  const { data, error } = await admin
     .from("certificates")
     .insert({
-      cert_no,
-      full_name,
-      specialty,
-      graduation_year,
-      gpa: gpa ?? null,
-      issue_date,
-      status: status ?? "valid",
+      ...(cert_no ? { cert_no } : {}),
+      familiya,
+      ism,
+      sharif: sharif ?? null,
+      yonalish_uz,
+      yonalish_eng: yonalish_eng ?? null,
+      soat: soat ?? null,
+      start_date: start_date ?? null,
+      end_date: end_date ?? null,
+      status: status ?? "active",
     })
     .select()
     .single();

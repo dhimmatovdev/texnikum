@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRouteHandlerSupabase } from "@/lib/supabase-server";
+import { getAdminSupabase } from "@/lib/supabase-admin";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const supabase = getRouteHandlerSupabase();
-  const { data, error } = await supabase
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const admin = getAdminSupabase();
+  const { data, error } = await admin
     .from("certificates")
     .select("*")
     .eq("id", params.id)
@@ -25,11 +33,35 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 
   const body = await req.json();
-  const { cert_no, full_name, specialty, graduation_year, gpa, issue_date, status } = body;
+  const {
+    cert_no,
+    familiya,
+    ism,
+    sharif,
+    yonalish_uz,
+    yonalish_eng,
+    soat,
+    start_date,
+    end_date,
+    status,
+  } = body;
 
-  const { data, error } = await supabase
+  const admin = getAdminSupabase();
+  const { data, error } = await admin
     .from("certificates")
-    .update({ cert_no, full_name, specialty, graduation_year, gpa, issue_date, status })
+    .update({
+      cert_no,
+      familiya,
+      ism,
+      sharif,
+      yonalish_uz,
+      yonalish_eng,
+      soat,
+      start_date,
+      end_date,
+      status,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", params.id)
     .select()
     .single();
@@ -49,7 +81,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { error } = await supabase.from("certificates").delete().eq("id", params.id);
+  const admin = getAdminSupabase();
+  const { error } = await admin.from("certificates").delete().eq("id", params.id);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
